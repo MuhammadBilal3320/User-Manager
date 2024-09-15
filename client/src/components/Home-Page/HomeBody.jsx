@@ -35,7 +35,6 @@ export default HomeBody;
 const HomeBodyContainer = styled.main`
     height: 100vh;
     width: 100%;
-    padding: 2rem;
     background-color: ${props => props.theme === "white" ? "#1d2a35" : "white"};
 
     @media screen and (max-width: 768px) {

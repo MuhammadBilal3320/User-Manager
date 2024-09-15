@@ -112,9 +112,9 @@ export default MyVault;
 
 const VaultMainContainer = styled.div`
     padding: 30px;
-    /* display: flex;
+    display: flex;
     justify-content: space-between;
-    gap: 50px; */
+    gap: 50px;
 
     @media screen and (max-width: 768px) {
         padding: 30px 2px;
