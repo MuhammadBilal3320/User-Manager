@@ -10,6 +10,7 @@ const HomePage = () => {
     return (
         <UseState>
             <HomeMainPage>
+                
                 <HomeNavbar />
                 <div className="sideBar-Body flex bg-[#1d2a35]">
                     <HomeSidebar />

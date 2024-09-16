@@ -10,7 +10,8 @@ import HomeEditModal from './HomeEditModal';
 const MyVault = () => {
     const [mainData, setMainData] = useState([]);
     const [editDelete, setEditDelete] = useState(null);
-    const [activeCard, setActiveCard] = useState(null); // Track the active card
+    const [activeCard, setActiveCard] = useState(null);
+    const [activeDots, setActiveDots] = useState(null);
 
     const fetchUser = async () => {
         try {
@@ -39,6 +40,8 @@ const MyVault = () => {
         if (!clickedCard && !clickedDropdown) {
             setActiveCard(null);
             setEditDelete(null);
+            setActiveDots(null);
+            setEditModal(false);
         }
 
         // Case 2: Clicking on a card when the edit-delete dropdown is open
@@ -52,8 +55,11 @@ const MyVault = () => {
         }
     };
 
-    const toggleEditDelete = (index) => {
+    const toggleEditDelete = (index, e) => {
+        e.stopPropagation()
         setEditDelete(prev => (prev === index ? null : index));
+        setActiveDots(prev => (prev === index ? null : index));
+        setActiveCard(prev => (prev === index ? null : index));
     };
 
     useEffect(() => {
@@ -70,10 +76,19 @@ const MyVault = () => {
         <VaultMainContainer theme={theme} editDelete={editDelete}>
             <main>
                 {mainData.map((item, index) => (
+                    
                     <div
                         key={index}
-                        onClick={() => {setActiveCard(index); setEditModal(true)}} // Set the active card index
-                        className={`card ${activeCard === index ? "active" : ""}`}
+                        onClick={(e) => {
+                            // Prevent modal from opening if the click happens inside the edit-delete dropdown
+                            if (!e.target.closest('.edit-Delete')) {
+                                setActiveCard(index);
+                                setEditModal(true);
+                                setActiveDots(null);
+                            }
+                        }}
+                        isClicked={activeDots !== null}
+                        className={`card ${activeCard === index || activeDots === index ? "active" : ""}`}
                     >
                         <div className="card-icon-text">
                             <div className="socialIcon"><span>{item.title[0].toUpperCase()}</span></div>
@@ -83,12 +98,13 @@ const MyVault = () => {
                             </div>
                         </div>
 
-                        <div className="dotsContainer">
-                            <HiDotsVertical onClick={() => toggleEditDelete(index)} className='threeDots' fontSize={"25px"} />
+                        <div className={`dotsContainer px-[2px] py-[10px] rounded-box ${theme === "white" ? "bg-[#1d2a35]" : "bg-[white]"}`}>
+                            <div className=" cardLastDot px-[2px] py-3 rounded-lg bg-[aliceblue] "/>
+                            <HiDotsVertical onClick={(e) => toggleEditDelete(index, e)} className={`threeDots `} color={`${theme === "white" ? "white" : "black"}`} fontSize={"25px"} />
 
                             {editDelete === index && (
                                 <div className="edit-Delete">
-                                    <div>
+                                    <div onClick={()=> setEditModal(true)}>
                                         <span className='w-[25%]'><MdModeEdit className='edit-delete-icon' /></span>
                                         <button className='w-[60%] text-left font-semibold'>Edit</button>
                                     </div>
@@ -132,17 +148,21 @@ const VaultMainContainer = styled.div`
         width: 100%;
         height: 70px;
         background-color: ${props => props.theme === "white" ? "#1d2a35" : "white"};
+        transition: width 1s;
         
         &:hover {
         cursor: pointer;
         border-radius: 15px;
         background-color: ${props => props.theme === "white" ? "aliceblue" : "#1d2a35"};
         color: ${props => props.theme === "white" ? "white" : "black"};
+
         }
         
         &.active {
-        background-color: ${props => props.theme === "white" ? "aliceblue" : "#1d2a35"};
-        color: ${props => props.theme === "white" ? "white" : "black"};
+        background-color: ${props => props.theme === "white" ? "aliceblue" : "#1d2a35"}; 
+        width: 100%;
+        transition: width 1s;
+        color: ${props => props.theme === "white" ? "white" : "black"}; 
         z-index: 10; 
         }
 
@@ -155,6 +175,14 @@ const VaultMainContainer = styled.div`
     .card:hover .socialIcon, .card.active .socialIcon {
         background-color: ${props => props.theme === "white" ? "#1d2a35" : "white"};
         color: ${props => props.theme === "white" ? "white" : "black"};
+    }
+
+    .card:hover .cardLastDot{
+        display: none;
+    }
+
+    .active .cardLastDot{
+        display: none;
     }
 
     .card:hover .cardText, .card.active .cardText {
@@ -211,7 +239,6 @@ const VaultMainContainer = styled.div`
 
     .edit-Delete {
         position: absolute;
-        opacity: ${props => props.editDelete!==null ? "1" : "0"};
         z-index: 30;
         right: 0;
         top: ${props => props.editDelete!==null ? "55px" : "45px"};

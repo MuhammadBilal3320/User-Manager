@@ -9,9 +9,7 @@
   padding: 0;
   margin: 0;
   font-family: Poppins;
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
+  box-sizing: border-box;
 }
 
 body {

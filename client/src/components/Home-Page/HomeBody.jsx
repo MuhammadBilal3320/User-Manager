@@ -16,13 +16,15 @@ const HomeBody = () => {
                 <div className="searchBarContainer">
                     <div className="searchBar">
                         <FaSearch color={theme === "white" ? "#1d2a35" : "white"} fontSize={"30px"} />
-                        <input className='searchInputField placeholder:text-[{theme === "white" ? "#1d2a35" : "white"}]' type="text" placeholder='Search' />
+                        <input className={`searchInputField placeholder:text-[${theme === "white" ? "#1d2a35" : "white"}]`} type="text" placeholder='Search' />
                     </div>
                 </div>
             </header>
 
             <main>
-                <MyVault/>
+
+                    <MyVault />
+
             </main>
 
         </HomeBodyContainer>
@@ -36,6 +38,7 @@ const HomeBodyContainer = styled.main`
     height: 100vh;
     width: 100%;
     background-color: ${props => props.theme === "white" ? "#1d2a35" : "white"};
+    overflow: hidden;
 
     @media screen and (max-width: 768px) {
         padding: 32px 12px;
