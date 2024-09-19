@@ -178,11 +178,9 @@ export default MyVault;
 
 const VaultMainContainer = styled.div`
     
-    padding: 0 30px;
-    margin-bottom:40px;
     display: flex;
     justify-content: space-between;
-    gap: 50px;
+    align-items: center;
 
     @media screen and (max-width: 768px) {
         padding: 30px 2px;
@@ -202,7 +200,7 @@ const VaultMainContainer = styled.div`
         align-items: center;
         justify-content: space-between;
         padding: 10px;
-        margin: 15px;
+        margin: 15px 0;
         width: 100%;
         height: 70px;
         background-color: ${props => props.theme === "white" ? "#1d2a35" : "white"};
