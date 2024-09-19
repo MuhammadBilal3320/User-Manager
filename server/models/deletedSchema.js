@@ -1,6 +1,6 @@
 import { Schema, mongoose } from "mongoose";
 
-const dataProtocol = new Schema({
+const deletedProtocol = new Schema({
 
     userID: {
         type: Schema.Types.ObjectId,
@@ -31,6 +31,6 @@ const dataProtocol = new Schema({
 
 });
 
-const DataSchema = mongoose.model('Data', dataProtocol);
+const DeletedSchema = mongoose.model('deleted', deletedProtocol);
 
-export default DataSchema;
+export default DeletedSchema;

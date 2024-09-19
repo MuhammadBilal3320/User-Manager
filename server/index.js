@@ -8,6 +8,8 @@ import Create from './routes/Data/Create.js';
 import Delete from './routes/Data/Delete.js';
 import Update from './routes/Data/Update.js';
 import FetchAll from './routes/Data/Fetch All.js';
+import DeleteItem from './routes/Data/Delete Item.js'
+import FetchAllDeleted from './routes/Data/Fetch All Deleted.js'
 import cors from 'cors';
 
 
@@ -30,6 +32,8 @@ app.use('/data', Create);
 app.use('/data', Delete);
 app.use('/data', Update);
 app.use('/data', FetchAll);
+app.use('/data', DeleteItem);
+app.use('/data', FetchAllDeleted);
 app.use('/data', About);
 // -------------------- Routers End ------------------------
 

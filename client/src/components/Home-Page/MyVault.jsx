@@ -6,12 +6,17 @@ import axios from 'axios';
 import { MdModeEdit } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
 import HomeEditModal from './HomeEditModal';
+import HomeEmpty from './HomeEmpty';
 
 const MyVault = () => {
-    const [mainData, setMainData] = useState([]);
+    const { setEditButton, setCreateButton, selectedData, setSelectedData, mainData, setMainData } = useContext(ManagerContext);
+    const { theme, setEditModal } = useContext(ManagerContext);
+
     const [editDelete, setEditDelete] = useState(null);
     const [activeCard, setActiveCard] = useState(null);
     const [activeDots, setActiveDots] = useState(null);
+
+
 
     const fetchUser = async () => {
         try {
@@ -32,6 +37,7 @@ const MyVault = () => {
         fetchUser();
     }, []);
 
+
     const handleClickOutside = (event) => {
         const clickedCard = event.target.closest('.card');
         const clickedDropdown = event.target.closest('.edit-Delete');
@@ -41,7 +47,7 @@ const MyVault = () => {
             setActiveCard(null);
             setEditDelete(null);
             setActiveDots(null);
-            setEditModal(false);
+            // setEditModal(false);
         }
 
         // Case 2: Clicking on a card when the edit-delete dropdown is open
@@ -67,48 +73,92 @@ const MyVault = () => {
         return () => {
             document.removeEventListener('click', handleClickOutside);
         };
-    }, [editDelete]);  // Add editDelete to dependency array to reflect changes properly
+    }, [editDelete]);
+
+    const deleteHandler = async (id) => {
+        try {
+            const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZGJiZDI0ZGI2ZmVmYzRhZjU2N2ZlMyIsImlhdCI6MTcyNTY3Njg1N30.kirwK8JEQ6TLKrakOk-vCDUFZuvx7x-w4JKBytV6ED0";
+            const response = await axios.post(`http://localhost:7000/data/deleteItem/${id}`, {}, {
+                headers: {
+                    authToken: `${token}`
+                }
+            });
+
+            const newData = mainData.filter(item => item._id !== id);
+            setMainData(newData);
+
+            setEditDelete(null)
+
+        } catch (error) {
+            console.error('Error deleting data:', error);
+        }
+        setActiveCard(null);
+    }
 
 
-    const { theme, setEditModal } = useContext(ManagerContext);
 
     return (
         <VaultMainContainer theme={theme} editDelete={editDelete}>
+
             <main>
                 {mainData.map((item, index) => (
-                    
+
                     <div
                         key={index}
                         onClick={(e) => {
+                            setCreateButton(false);
+                            setEditButton(false);
                             // Prevent modal from opening if the click happens inside the edit-delete dropdown
                             if (!e.target.closest('.edit-Delete')) {
                                 setActiveCard(index);
                                 setEditModal(true);
                                 setActiveDots(null);
                             }
+                            setSelectedData({
+                                title: item.title,
+                                emailOrUser: item.emailOrUser,
+                                password: item.password,
+                                message: item.message
+                            });
+                            
                         }}
-                        isClicked={activeDots !== null}
+                        isclicked={activeDots !== null}
                         className={`card ${activeCard === index || activeDots === index ? "active" : ""}`}
                     >
-                        <div className="card-icon-text">
-                            <div className="socialIcon"><span>{item.title[0].toUpperCase()}</span></div>
+                        <div className="card-icon-text flex justify-center items-center">
+                            <div className="socialIcon"><span>{item.title ? item.title[0].toUpperCase() : ''}</span></div>
                             <div className="cardText">
                                 <div className="cardTitle">{item.title}</div>
                                 <div className="cardEmail">{item.emailOrUser}</div>
                             </div>
                         </div>
 
-                        <div className={`dotsContainer px-[2px] py-[10px] rounded-box ${theme === "white" ? "bg-[#1d2a35]" : "bg-[white]"}`}>
-                            <div className=" cardLastDot px-[2px] py-3 rounded-lg bg-[aliceblue] "/>
+                        <div className={`dotsContainer py-[5px] rounded-badge ${theme === "white" ? "bg-[#1d2a35]" : "bg-[white]"}`}>
+                            <div className={` cardLastDot px-1 py-1 rounded-box ${theme === "white" ? "bg-[aliceblue]" : "bg-black"} `} />
                             <HiDotsVertical onClick={(e) => toggleEditDelete(index, e)} className={`threeDots `} color={`${theme === "white" ? "white" : "black"}`} fontSize={"25px"} />
 
                             {editDelete === index && (
                                 <div className="edit-Delete">
-                                    <div onClick={()=> setEditModal(true)}>
+                                    <div onClick={(event) => {
+                                        event.stopPropagation();
+                                        setEditModal(true);
+                                        setCreateButton(false);
+                                        setEditButton(true);
+                                        setSelectedData({
+                                            id: item._id,
+                                            title: item.title,
+                                            emailOrUser: item.emailOrUser,
+                                            password: item.password,
+                                            message: item.message
+                                        });
+                                        setEditDelete(null);
+                                        console.log("Selected data" + selectedData)
+
+                                    }}>
                                         <span className='w-[25%]'><MdModeEdit className='edit-delete-icon' /></span>
                                         <button className='w-[60%] text-left font-semibold'>Edit</button>
                                     </div>
-                                    <div>
+                                    <div onClick={() => deleteHandler(item._id)}>
                                         <span className='w-[25%]'><MdDelete color='red' className='edit-delete-icon' /></span>
                                         <button className='w-[60%] text-red-600 text-left font-semibold'>Delete</button>
                                     </div>
@@ -119,7 +169,7 @@ const MyVault = () => {
                     </div>
                 ))}
             </main>
-            <HomeEditModal/>
+            <HomeEditModal />
         </VaultMainContainer>
     );
 };
@@ -127,13 +177,21 @@ const MyVault = () => {
 export default MyVault;
 
 const VaultMainContainer = styled.div`
-    padding: 30px;
+    
+    padding: 0 30px;
+    margin-bottom:40px;
     display: flex;
     justify-content: space-between;
     gap: 50px;
 
     @media screen and (max-width: 768px) {
         padding: 30px 2px;
+    }
+
+    main{
+        height: 80vh;
+    overflow: auto;
+    overflow-x: hidden;
     }
 
     .card {
@@ -149,7 +207,7 @@ const VaultMainContainer = styled.div`
         height: 70px;
         background-color: ${props => props.theme === "white" ? "#1d2a35" : "white"};
         transition: width 1s;
-        
+        box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
         &:hover {
         cursor: pointer;
         border-radius: 15px;
@@ -215,6 +273,12 @@ const VaultMainContainer = styled.div`
         color: ${props => props.theme === "white" ? "black" : "white"};
         border-radius: 10px;
         margin-left: 10px;
+        
+        @media screen and (max-width: 768px) {
+            width: 40px;
+            height: 40px;
+            font-size: 25px;
+        }
     }
 
     .cardText {
@@ -223,6 +287,14 @@ const VaultMainContainer = styled.div`
         .cardEmail {
         font-weight: normal;
         color: ${props => props.theme === "white" ? "#c5c5c9" : "#39393a"};
+        }
+    }
+
+    .cardEmail{
+        @media screen and (max-width: 768px) {
+            width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
     }
 
@@ -241,7 +313,7 @@ const VaultMainContainer = styled.div`
         position: absolute;
         z-index: 30;
         right: 0;
-        top: ${props => props.editDelete!==null ? "55px" : "45px"};
+        top: ${props => props.editDelete !== null ? "55px" : "45px"};
         background-color: ${props => props.theme === "white" ? "white" : "#1d2a35"};
         color: ${props => props.theme === "white" ? "black" : "white"};
         padding: 5px;

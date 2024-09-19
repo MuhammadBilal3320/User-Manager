@@ -4,16 +4,17 @@ import ManagerContext from './context/Context';
 import { FaSearch } from "react-icons/fa";
 import MyVault from './MyVault';
 import HomeEditModal from './HomeEditModal';
+import DeletedItems from './DeletedItems';
 
 const HomeBody = () => {
-    const { theme } = useContext(ManagerContext);
+    const { theme, activeComponent, mainData} = useContext(ManagerContext);
 
     return (
         <HomeBodyContainer theme={theme}>
 
             <header>
-                <h1>My Vault</h1>
-                <div className="searchBarContainer">
+                <h1 className='w-[300px]'>{activeComponent === "My Vault" ? "My Vault" : "Deleted Items"}</h1>
+                <div className="searchBarContainer relative z-50">
                     <div className="searchBar">
                         <FaSearch color={theme === "white" ? "#1d2a35" : "white"} fontSize={"30px"} />
                         <input className={`searchInputField placeholder:text-[${theme === "white" ? "#1d2a35" : "white"}]`} type="text" placeholder='Search' />
@@ -23,7 +24,7 @@ const HomeBody = () => {
 
             <main>
 
-                    <MyVault />
+                {activeComponent === "My Vault" ? <MyVault/> : <DeletedItems/>}
 
             </main>
 
@@ -69,6 +70,8 @@ const HomeBodyContainer = styled.main`
     }
 
     .searchBar {
+        box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+
         background-color: ${props => props.theme === "white" ? "white" : "#1d2a35"};
         overflow: hidden;
         display: flex;
@@ -116,11 +119,12 @@ const HomeBodyContainer = styled.main`
 
     main{
         width: 100%;
-        height: 80%;
+        padding: 20px;
 
         @media screen and (max-width: 768px) {
             position: relative;
             z-index: 5;
+            padding: 30px 2px;
         }
     }
 `;

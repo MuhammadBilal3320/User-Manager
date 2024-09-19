@@ -2,6 +2,7 @@ import { Router } from "express";
 import dataSchema from '../../models/dataSchema.js';
 import { check, validationResult } from 'express-validator';
 import fetchUser from "../../middleware/fetchUser.js";
+import DeletedSchema from "../../models/deletedSchema.js";
 
 const router = Router();
 
@@ -18,7 +19,7 @@ router.delete('/deleteData/:id',fetchUser,
 
         try {
 
-            const deleteData = await dataSchema.findById(req.params.id);
+            const deleteData = await DeletedSchema.findById(req.params.id);
             
             if (!deleteData) {
                 return res.status(404).json({ message: "Data not found!" });
@@ -30,7 +31,7 @@ router.delete('/deleteData/:id',fetchUser,
                 return res.status(403).json({ message: "You are not authorized to delete this data!" });
             }
 
-            await dataSchema.findByIdAndDelete(req.params.id);
+            await DeletedSchema.findByIdAndDelete(req.params.id);
             res.status(200).json({ message: "Data Deleted successfully" });
 
         } catch (error) {

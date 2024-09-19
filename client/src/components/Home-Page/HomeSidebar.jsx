@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react'
-import styled from 'styled-components'
+import React, { useContext, useEffect, useState } from 'react';
+import styled from 'styled-components';
 import ManagerContext from './context/Context';
 import { GiHamburgerMenu } from "react-icons/gi";
 import { FaPlus } from "react-icons/fa6";
@@ -7,51 +7,73 @@ import { CiVault } from "react-icons/ci";
 import { MdDelete } from "react-icons/md";
 import { ImCross } from "react-icons/im";
 
-const HomeSidebar = () => {
 
-    const { theme, leftSlider, setLeftSlider } = useContext(ManagerContext);
+const HomeSidebar = () => {
+    const { theme, leftSlider, setLeftSlider, setEditModal, setEditButton, setCreateButton, selectedData, setSelectedData, activeComponent, setActiveComponent } = useContext(ManagerContext);
     const [sideSlider, setSideSlider] = useState(false);
 
     const sideComponents = [
         {
             title: "My Vault",
-            icon: <CiVault fontSize={"25px"} />
+            icon: <CiVault fontSize={"25px"} />,
         },
         {
             title: "Deleted Items",
-            icon: <MdDelete color='red' fontSize={"25px"} />
-        }
-    ]
+            icon: <MdDelete color='red' fontSize={"25px"} />,
+        },
+    ];
+
+    // useEffect(() => {
+    //     setSelectedData(null);
+    // }, [selectedData]);
+
+    const createHandler = ()=>{
+        setActiveComponent("My Vault");
+        setEditButton(false);
+        setEditModal(true);
+        setCreateButton(true);
+        setSelectedData({ 
+            id: "", 
+            title: "", 
+            emailOrUser: "", 
+            password: "", 
+            message: "" 
+        });
+    }
+    
 
     return (
         <MainSidebar theme={theme} sideSlider={sideSlider} leftSlider={leftSlider}>
-
             <div className="sideBarController">
-
-                <GiHamburgerMenu className='hamBurger md:block hidden ' onClick={() => setSideSlider(!sideSlider)} />
+                <GiHamburgerMenu className='hamBurger md:block hidden' onClick={() => setSideSlider(!sideSlider)} />
                 <span className='w-[100%] flex justify-end pr-4'>
                     <ImCross className='crossButton md:hidden block' onClick={() => setLeftSlider(false)} fontSize={"20px"} />
                 </span>
 
-                <button className='addButton'>
+                <button onClick={createHandler} className='addButton'>
                     <span className='leftSideIcons'><FaPlus fontSize={"18px"} /></span>
                     <span className='sideButtons'>Create New</span>
                 </button>
 
                 <div className="componentController">
-                    {
-                        sideComponents.map((item, index) => (
-                            <div key={index} className="component">
-                                <span className='leftSideIcons'>{item.icon}</span>
-                                <span className='sideButtons' >{item.title}</span>
-                            </div>
-                        ))
-                    }
+                    {sideComponents.map((item, index) => (
+                        <div
+                            key={index}
+                            className={`component ${activeComponent === item.title ? 'activeComponent' : ''}`}
+                            onClick={() => {
+                                if(item.title === "Deleted Items") {
+                                    setEditModal(false);
+                                }
+                                setActiveComponent(item.title)
+}
+                            }
+                        >
+                            <span className='leftSideIcons'>{item.icon}</span>
+                            <span className='sideButtons'>{item.title}</span>
+                        </div>
+                    ))}
                 </div>
-
             </div>
-
-
         </MainSidebar>
     )
 }
@@ -73,7 +95,7 @@ const MainSidebar = styled.div`
 
     @media screen and (max-width:768px) {
             position: absolute;
-            z-index: 50;
+            z-index: 100;
             top: 0;
             left: ${props => props.leftSlider ? "0%" : "-100%"};
             transition: all 0.3s ease-in-out;
@@ -122,6 +144,8 @@ const MainSidebar = styled.div`
         border-radius: 2rem;
         font-weight: 600;
         transition: all 0.2s ease-in-out;
+        box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+
         &:hover{
             scale: 0.90;
         }
@@ -132,6 +156,7 @@ const MainSidebar = styled.div`
         justify-content: center;
         align-items: center;
         width: 30px;
+        
     }
 
     .sideButtons{
@@ -167,6 +192,11 @@ const MainSidebar = styled.div`
             color: black;
             transform: translateY(-5px);
         }
+    }
+
+    .activeComponent{
+        color: black;
+        background-color: whitesmoke;
     }
 
     `

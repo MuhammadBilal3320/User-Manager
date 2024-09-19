@@ -119,6 +119,7 @@ const MainNavbar = styled.div`
         transition: all 0.4s;
         scale: 1;
         cursor: pointer;
+        
 
         &:active{
             scale: .95;
@@ -170,7 +171,7 @@ const MainNavbar = styled.div`
         position: relative;
         
         h1{
-            box-shadow: 0 0 6px 0px ${props => props.theme === "white" ? "white" : "black"};
+            box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
             display: flex;
             justify-content: center;
             align-items: center;

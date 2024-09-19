@@ -8,7 +8,6 @@ const router = Router();
 
 router.post('/createData', fetchUser,
     [
-        check('dataImage').optional().isString().withMessage('Data Image must be a string'),
         check('title').optional().isString().withMessage('Title must be a string'),
         check('emailOrUser').optional().isString().withMessage('Email/Username must be a string')
             .isLength({ min: 3 }).withMessage('Email/Username must be at least 3 characters long'),
@@ -24,7 +23,7 @@ router.post('/createData', fetchUser,
         }
 
         try {
-            const { dataImage, title, emailOrUser, password, message } = req.body;
+            const { title, emailOrUser, password, message } = req.body;
 
             if (!emailOrUser && !password) {
                 return res.status(400).send({ message: "At least one of Email/Username or Password must be provided!" });
@@ -35,7 +34,6 @@ router.post('/createData', fetchUser,
 
             const newData = new dataSchema({
                 userID: req.user.id,
-                dataImage: dataImage || null,
                 title: title || null,
                 emailOrUser: encodedEmailOrUser,
                 password: encodedPassword,
