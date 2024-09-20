@@ -8,15 +8,19 @@ import DeletedItems from './DeletedItems';
 import Fuse from 'fuse.js';
 
 const HomeBody = () => {
-    const { theme, activeComponent, mainData, setSelectedData, setEditModal, itemHighlighter, setItemHighlighter } = useContext(ManagerContext);
+    const { theme, activeComponent, mainData, setSelectedData, setEditModal, setItemHighlighter, fetchAllDeleted } = useContext(ManagerContext);
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [selectedCard, setSelectedCard] = useState(null);
+    const [displayField, setDisplayField] = useState('title');  // 'title', 'emailOrUser', or 'userName'
 
-    // Configure Fuse.js
-    const fuse = new Fuse(mainData, {
-        keys: ['emailOrUser', 'title'],  // Adjust the keys based on your data structure
-        threshold: 0.4, // Higher threshold means more results, lower means stricter matching
+    // Select the correct data set based on the active component
+    const currentData = activeComponent === "My Vault" ? mainData : fetchAllDeleted;
+
+    // Configure Fuse.js to search within the current data set
+    const fuse = new Fuse(currentData, {
+        keys: ['emailOrUser', 'title', 'userName'],  // Add 'userName' to searchable keys
+        threshold: 0.4,  // Adjust threshold for more or fewer results
     });
 
     // Handle Search Input Change
@@ -27,18 +31,29 @@ const HomeBody = () => {
         if (value.trim()) {
             const result = fuse.search(value).map(({ item }) => item);  // Get the actual items from Fuse results
             setSearchResults(result);
-            
+
+            // Determine the field to display based on the query content
+            if (value.includes('@')) {
+                setDisplayField('emailOrUser');  // Display 'emailOrUser' for email-like queries
+            } else {
+                setDisplayField('title');        // Otherwise, display 'title'
+            }
         } else {
             setSearchResults([]);  // Clear suggestions if no search query
         }
     };
 
     // Handle Card Click
-    const handleCardClick = (index) => {
-        setItemHighlighter(index._id);
-        console.log("This is id i get", itemHighlighter)
+    const handleCardClick = (item) => {
+        setItemHighlighter(item._id);
         setEditModal(true);
-        setSelectedData({title: index.title, emailOrUser: index.emailOrUser, password: index.password, message: index.message});
+        setSelectedData({
+            title: item.title,
+            emailOrUser: item.emailOrUser,
+            userName: item.userName,
+            password: item.password,
+            message: item.message
+        });
 
         setSearchQuery(''); // Clear the search bar after selecting an item
     };
@@ -66,7 +81,9 @@ const HomeBody = () => {
                                     key={index}
                                     className="suggestionItem"
                                     onClick={() => handleCardClick(item)}>
-                                    {item.title}
+                                    {/* Conditionally render title, emailOrUser, or userName */}
+                                    {displayField === 'title' && item.title}
+                                    {displayField === 'emailOrUser' && item.emailOrUser}
                                 </div>
                             ))}
                         </SuggestionsContainer>
@@ -88,7 +105,6 @@ const HomeBody = () => {
 export default HomeBody;
 
 
-
 const HomeBodyContainer = styled.main`
     height: 100vh;
     width: 100%;
@@ -96,7 +112,7 @@ const HomeBodyContainer = styled.main`
     overflow: hidden;
 
     @media screen and (max-width: 768px) {
-        padding: 32px 12px;
+        padding: 0px 12px;
     }
 
     header {
@@ -106,6 +122,11 @@ const HomeBodyContainer = styled.main`
         padding: 1rem 0;
 
         @media screen and (max-width: 768px) {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             flex-direction: column;
             gap: 1rem;
         }
@@ -193,6 +214,13 @@ const SuggestionsContainer = styled.div`
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     max-height: 300px;
     overflow-y: auto;
+    @media screen and (max-width: 768px) {
+        width: 360px;
+    }
+    @media screen and (max-width: 400px) {
+        width: 360px;
+        max-height: 50px;
+    }
 
     .suggestionItem {
         padding: 10px;

@@ -177,8 +177,8 @@ export default MyVault;
 const VaultMainContainer = styled.div`
 
 .highlight {
-        border: 2px solid #00FF00; /* Change to your preferred highlight style */
-        box-shadow: 0 0 10px rgba(0, 255, 0, 0.5); /* Optional: add a glowing effect */
+        border: 2px solid #00FF00;
+        box-shadow: 0 0 10px rgba(0, 255, 0, 0.5); 
     }
     
     display: flex;

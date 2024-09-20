@@ -242,13 +242,15 @@ const EditModalContainer = styled.div`
     height: 750px;
     border-radius: 20px;
 
+
     @media screen and (max-width: 768px) {
     width: 100%;
     max-width: 100%;
     height: 730px;
     position: absolute;
     left: 0;
-    bottom: -100px;
+    bottom: ${(props) => props.editModal ? "150px" : "80px"};
+
     }   
 
 .modalContainer {
@@ -266,6 +268,7 @@ const EditModalContainer = styled.div`
     border-radius: 20px;
     box-shadow: #0000009d 0px 2px 4px, #00000090 0px 7px 13px -3px, #00000075 0 0 8px 1px inset;
     @media screen and (max-width: 768px) {
+    z-index: 50;
     right: 0;
     bottom: 0;
     width: 100%;

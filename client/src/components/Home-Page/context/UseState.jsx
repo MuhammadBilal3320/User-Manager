@@ -4,6 +4,7 @@ import ManagerContext from './Context.jsx'
 const UseState = (props) => {
 
     const [mainData, setMainData] = useState([]);
+    const [fetchAllDeleted, setFetchAllDeleted] = useState([]);
     const [activeComponent, setActiveComponent] = useState('My Vault'); 
     const [theme, setTheme] = useState(localStorage.getItem('theme') || "white");
     const [leftSlider, setLeftSlider] = useState(false);
@@ -18,6 +19,7 @@ const UseState = (props) => {
 
     return (
         <ManagerContext.Provider value={{
+        fetchAllDeleted, setFetchAllDeleted,
         activeCard, setActiveCard,
         mainData, setMainData,
         activeComponent, setActiveComponent,

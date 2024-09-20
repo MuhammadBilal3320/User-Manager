@@ -5,11 +5,11 @@ import HomeEditModal from './HomeEditModal';
 import axios from 'axios';
 
 const DeletedItems = () => {
-    const { setEditButton, setCreateButton, selectedData, setSelectedData } = useContext(ManagerContext);
-    const { theme, setEditModal } = useContext(ManagerContext);
+    const { setEditButton, setCreateButton, selectedData, setSelectedData, fetchAllDeleted, setFetchAllDeleted } = useContext(ManagerContext);
+    const { theme, setEditModal, itemHighlighter, setItemHighlighter } = useContext(ManagerContext);
 
     const [activeCard, setActiveCard] = useState(null);
-    const [fetchAllDeleted, setFetchAllDeleted] = useState([]);
+    
 
 
     const fetchUser = async () => {
@@ -98,7 +98,7 @@ const DeletedItems = () => {
                             });
                             console.log(selectedData)
                         }}
-                        className={`card ${activeCard === index? "active" : ""}`}
+                        className={`card ${activeCard === index  ? "active" : ""} ${itemHighlighter === item._id ? "highlight" : ""}`}
                     >
                         <div className="card-icon-text">
                             <div className="socialIcon"><span>{item.title ? item.title[0].toUpperCase() : ''}</span></div>
@@ -168,6 +168,13 @@ const DeletedItems = () => {
 export default DeletedItems;
 
 const VaultMainContainer = styled.div`
+
+.highlight {
+        border: 3px solid #00dfc0; /* Change to your preferred highlight style */
+        box-shadow: 0 0 10px rgba(0, 255, 0, 0.5); /* Optional: add a glowing effect */
+    }
+    
+
     display: flex;
     justify-content: space-between;
     align-items: center;

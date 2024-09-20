@@ -30,9 +30,9 @@ const HomeNavbar = () => {
         }
     };
 
-    // useEffect(() => {
-    //     fetchUser()
-    // }, [])
+    useEffect(() => {
+        fetchUser()
+    }, [])
 
 
 
