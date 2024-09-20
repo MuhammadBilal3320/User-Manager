@@ -5,7 +5,7 @@ import HomeEditModal from './HomeEditModal';
 import axios from 'axios';
 
 const DeletedItems = () => {
-    const { setEditButton, setCreateButton, selectedData, setSelectedData, mainData, setMainData } = useContext(ManagerContext);
+    const { setEditButton, setCreateButton, selectedData, setSelectedData } = useContext(ManagerContext);
     const { theme, setEditModal } = useContext(ManagerContext);
 
     const [activeCard, setActiveCard] = useState(null);
@@ -30,6 +30,9 @@ const DeletedItems = () => {
     const deleteItemHandler = async(itemId, event)=>{
         event.preventDefault();
         event.stopPropagation();
+
+        setEditModal(false);
+
         try {
             const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZGJiZDI0ZGI2ZmVmYzRhZjU2N2ZlMyIsImlhdCI6MTcyNTY3Njg1N30.kirwK8JEQ6TLKrakOk-vCDUFZuvx7x-w4JKBytV6ED0"; 
             const response = await axios.delete(`http://localhost:7000/data/deleteData/${itemId}`, {

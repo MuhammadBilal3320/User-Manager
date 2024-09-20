@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import ManagerContext from './context/Context';
 import { HiDotsVertical } from "react-icons/hi";
@@ -6,16 +6,13 @@ import axios from 'axios';
 import { MdModeEdit } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
 import HomeEditModal from './HomeEditModal';
-import HomeEmpty from './HomeEmpty';
 
 const MyVault = () => {
-    const { setEditButton, setCreateButton, selectedData, setSelectedData, mainData, setMainData } = useContext(ManagerContext);
-    const { theme, setEditModal } = useContext(ManagerContext);
+    const { setEditButton, setCreateButton, setSelectedData, mainData, setMainData, activeCard, setActiveCard } = useContext(ManagerContext);
+    const { theme, setEditModal, itemHighlighter, setItemHighlighter } = useContext(ManagerContext);
 
     const [editDelete, setEditDelete] = useState(null);
-    const [activeCard, setActiveCard] = useState(null);
     const [activeDots, setActiveDots] = useState(null);
-
 
 
     const fetchUser = async () => {
@@ -95,8 +92,6 @@ const MyVault = () => {
         setActiveCard(null);
     }
 
-
-
     return (
         <VaultMainContainer theme={theme} editDelete={editDelete}>
 
@@ -111,8 +106,12 @@ const MyVault = () => {
                             // Prevent modal from opening if the click happens inside the edit-delete dropdown
                             if (!e.target.closest('.edit-Delete')) {
                                 setActiveCard(index);
+                                console.log("This is active card: ",activeCard)
                                 setEditModal(true);
                                 setActiveDots(null);
+                            }
+                            if(itemHighlighter === item._id){
+                                setItemHighlighter(null);
                             }
                             setSelectedData({
                                 title: item.title,
@@ -123,7 +122,7 @@ const MyVault = () => {
                             
                         }}
                         isclicked={activeDots !== null}
-                        className={`card ${activeCard === index || activeDots === index ? "active" : ""}`}
+                        className={`card ${(activeCard === index || activeDots === index) ? "active" : ""} ${itemHighlighter === item._id ? "highlight" : ""}`}
                     >
                         <div className="card-icon-text flex justify-center items-center">
                             <div className="socialIcon"><span>{item.title ? item.title[0].toUpperCase() : ''}</span></div>
@@ -152,7 +151,6 @@ const MyVault = () => {
                                             message: item.message
                                         });
                                         setEditDelete(null);
-                                        console.log("Selected data" + selectedData)
 
                                     }}>
                                         <span className='w-[25%]'><MdModeEdit className='edit-delete-icon' /></span>
@@ -177,6 +175,11 @@ const MyVault = () => {
 export default MyVault;
 
 const VaultMainContainer = styled.div`
+
+.highlight {
+        border: 2px solid #00FF00; /* Change to your preferred highlight style */
+        box-shadow: 0 0 10px rgba(0, 255, 0, 0.5); /* Optional: add a glowing effect */
+    }
     
     display: flex;
     justify-content: space-between;

@@ -11,9 +11,14 @@ const UseState = (props) => {
     const [createButton, setCreateButton] = useState(false);
     const [editButton, setEditButton] = useState(false);
     const [selectedData, setSelectedData] = useState({id:"", title:"", emailOrUser:"", password:"", message:""})
+    const [filteredResults, setFilteredResults] = useState(mainData);
+    const [activeCard, setActiveCard] = useState(null);
+    const [itemHighlighter, setItemHighlighter] = useState(null);
+
 
     return (
         <ManagerContext.Provider value={{
+        activeCard, setActiveCard,
         mainData, setMainData,
         activeComponent, setActiveComponent,
         theme, setTheme, 
@@ -21,7 +26,9 @@ const UseState = (props) => {
         editModal, setEditModal, 
         createButton, setCreateButton,
         editButton, setEditButton,
-        selectedData, setSelectedData
+        selectedData, setSelectedData,
+        filteredResults, setFilteredResults,
+        itemHighlighter, setItemHighlighter
         }}>
             {props.children}
         </ManagerContext.Provider>
