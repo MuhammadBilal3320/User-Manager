@@ -8,7 +8,7 @@ import DeletedItems from './DeletedItems';
 import Fuse from 'fuse.js';
 
 const HomeBody = () => {
-    const { theme, activeComponent, mainData, setSelectedData, setEditModal, setItemHighlighter, fetchAllDeleted } = useContext(ManagerContext);
+    const { theme, activeComponent, mainData, setSelectedData, setItemHighlighter, fetchAllDeleted } = useContext(ManagerContext);
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [selectedCard, setSelectedCard] = useState(null);
@@ -46,7 +46,6 @@ const HomeBody = () => {
     // Handle Card Click
     const handleCardClick = (item) => {
         setItemHighlighter(item._id);
-        setEditModal(true);
         setSelectedData({
             title: item.title,
             emailOrUser: item.emailOrUser,

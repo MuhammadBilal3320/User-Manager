@@ -106,11 +106,11 @@ const MyVault = () => {
                             // Prevent modal from opening if the click happens inside the edit-delete dropdown
                             if (!e.target.closest('.edit-Delete')) {
                                 setActiveCard(index);
-                                console.log("This is active card: ",activeCard)
+                                console.log("This is active card: ", activeCard)
                                 setEditModal(true);
                                 setActiveDots(null);
                             }
-                            if(itemHighlighter === item._id){
+                            if (itemHighlighter === item._id) {
                                 setItemHighlighter(null);
                             }
                             setSelectedData({
@@ -119,7 +119,7 @@ const MyVault = () => {
                                 password: item.password,
                                 message: item.message
                             });
-                            
+
                         }}
                         isclicked={activeDots !== null}
                         className={`card ${(activeCard === index || activeDots === index) ? "active" : ""} ${itemHighlighter === item._id ? "highlight" : ""}`}
@@ -177,8 +177,8 @@ export default MyVault;
 const VaultMainContainer = styled.div`
 
 .highlight {
-        border: 2px solid #00FF00;
-        box-shadow: 0 0 10px rgba(0, 255, 0, 0.5); 
+    border: 3px solid #00dfc0; /* Change to your preferred highlight style */
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5); /* Optional: add a glowing effect */
     }
     
     display: flex;
@@ -191,8 +191,12 @@ const VaultMainContainer = styled.div`
 
     main{
         height: 80vh;
-    overflow: auto;
-    overflow-x: hidden;
+        overflow: hidden;
+
+    &:hover{
+        overflow: auto;
+        overflow-x: hidden;
+    }
     }
 
     .card {
