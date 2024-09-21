@@ -1,13 +1,60 @@
 import { Field, Form, Formik } from 'formik';
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { IoIosEye } from "react-icons/io";
-import { IoIosEyeOff } from "react-icons/io";
+import { IoIosEye, IoIosEyeOff } from "react-icons/io";
 import { Link } from 'react-router-dom';
+import * as Yup from 'yup'; // Import Yup for validation
+import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
 
-    const [showPassword, setShowPassword] = useState(false)
+    const [showPassword, setShowPassword] = useState(false);
+
+    // Define validation schema
+    const validationSchema = Yup.object({
+        email: Yup.string().email('Invalid email format').required('Email is required'),
+        password: Yup.string().min(8, 'Password must be at least 8 characters').required('Password is required')
+    });
+
+
+    const userLogin = async (values) => {
+        toast.promise(
+            axios.post(
+                "http://localhost:7000/auth/loginUser",
+                {
+                    email: values.email,
+                    password: values.password,
+                },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            ),
+            {
+                pending: 'Logging in...',
+                success: 'Login successful!',
+                error: {
+                    render({ data }) {
+                        // Custom error message from the server
+                        return data.response?.data?.message || 'Login failed!';
+                    },
+                },
+            },
+            {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+            }
+        );
+    };
 
     return (
         <RegistrationMain>
@@ -23,35 +70,45 @@ const Login = () => {
                 </div>
                 <Formik
                     initialValues={{ email: '', password: '' }}
+                    validationSchema={validationSchema}  // Attach the validation schema
                     onSubmit={(values) => {
-                        console.log(values);
+                        userLogin(values)
                     }}
                 >
-                    {({ values }) => (
+                    {({ values, errors, touched }) => (
                         <Form>
                             <div className="FormContainer">
 
                                 <div className={`inputContainer ${values.email ? 'filled' : ''}`}>
                                     <label htmlFor='email'>Email</label>
                                     <Field className="inputField" name="email" type="email" />
+                                    {errors.email && touched.email ? (
+                                        <div className="error text-red-600 ml-5 text-sm">{errors.email}</div>
+                                    ) : null}
                                 </div>
 
                                 <div className={`inputContainer ${values.password ? 'filled' : ''}`}>
                                     <label htmlFor='password'>Password</label>
-                                    <Field className="inputField" name="password" style={{ paddingRight: "45px" }} type={`${showPassword ? "text" : "password"}`} />
+                                    <Field className="inputField" name="password" style={{ paddingRight: "45px" }} type={showPassword ? "text" : "password"} />
                                     <div className="input-eyes">
-                                        {showPassword ? <IoIosEye onClick={() => setShowPassword(false)} fontSize={"25px"} /> : <IoIosEyeOff onClick={() => setShowPassword(true)} fontSize={"25px"} />}</div>
+                                        {showPassword ? <IoIosEye onClick={() => setShowPassword(false)} fontSize={"25px"} /> : <IoIosEyeOff onClick={() => setShowPassword(true)} fontSize={"25px"} />}
+                                    </div>
+                                    {errors.password && touched.password ? (
+                                        <div className="error text-red-600 ml-5 text-sm">{errors.password}</div>
+                                    ) : null}
                                 </div>
 
                                 <div className='signUpButton'>
                                     <StyledWrapper>
-                                        <button className="button">
+                                        <button className="button" type="submit">
                                             <p>LOG IN</p>
                                         </button>
                                     </StyledWrapper>
                                 </div>
 
-                                <div className="alreadyAccount text-[18px] mt-5 w-[100%] flex justify-center" >Create New Account? <Link to={'/registration'}><b className='text-[#00dfc0] ml-2'> Sign up</b></Link></div>
+                                <div className="alreadyAccount text-[18px] mt-5 w-[100%] flex justify-center" >
+                                    Create New Account? <Link to={'/registration'}><b className='text-[#00dfc0] ml-2'> Sign up</b></Link>
+                                </div>
 
                             </div>
                         </Form>
@@ -67,12 +124,13 @@ const Login = () => {
                     <h3>PROTECT YOURSELF</h3>
                 </div>
             </SideContainer>
-
+            <ToastContainer style={{ width: "360px" }} position="top-right"/>
         </RegistrationMain>
     );
 };
 
 export default Login;
+
 
 const RegistrationMain = styled.div`
     display: flex;
@@ -168,7 +226,6 @@ const RegistrationContainer = styled.div`
         min-width: 310px;
         width: 400px;
         padding: 10px;
-        margin-bottom: 10px;
         border-radius: 10px;
         border: 2px solid gray;
         outline: none;
