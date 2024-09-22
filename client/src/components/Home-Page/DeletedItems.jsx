@@ -3,10 +3,11 @@ import styled from 'styled-components';
 import ManagerContext from './context/Context';
 import HomeEditModal from './HomeEditModal';
 import axios from 'axios';
+import HomeEmpty from './HomeEmpty';
 
 const DeletedItems = () => {
     const { setEditButton, setCreateButton, selectedData, setSelectedData, fetchAllDeleted, setFetchAllDeleted } = useContext(ManagerContext);
-    const { theme, setEditModal, itemHighlighter, setItemHighlighter } = useContext(ManagerContext);
+    const { theme, setEditModal, itemHighlighter } = useContext(ManagerContext);
 
     const [activeCard, setActiveCard] = useState(null);
     
@@ -81,7 +82,8 @@ const DeletedItems = () => {
 
     return (
         <VaultMainContainer theme={theme} >
-            <main>
+            {!fetchAllDeleted.length > 0 ? <HomeEmpty/> :
+                <main>
                 {fetchAllDeleted.map((item, index) => (
 
                     <div
@@ -160,6 +162,7 @@ const DeletedItems = () => {
                     </div>
                 ))}
             </main>
+            }
             <HomeEditModal />
         </VaultMainContainer>
     );

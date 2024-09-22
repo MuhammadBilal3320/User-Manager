@@ -160,6 +160,11 @@ const LeftContainer = styled.div`
         gap: 2rem;
         width: 100%;
         margin-top: 5rem;
+        @media screen and (max-width: 500px){
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
     }
 
     button{
@@ -179,6 +184,8 @@ const LeftContainer = styled.div`
             transform: translateY(-5px);
             scale: 1;
         }
+
+        
     }
 
 

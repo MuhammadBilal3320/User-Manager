@@ -5,17 +5,31 @@ import { FaPlus } from 'react-icons/fa';
 
 const HomeEmpty = () => {
 
-    const {theme} = useContext(ManagerContext);
+    const {theme, activeComponent, setActiveComponent, setEditButton,  setEditModal, setCreateButton, setSelectedData} = useContext(ManagerContext);
+
+    const createHandler = ()=>{
+        setActiveComponent("My Vault");
+        setEditButton(false);
+        setEditModal(true);
+        setCreateButton(true);
+        setSelectedData({ 
+            id: "", 
+            title: "", 
+            emailOrUser: "", 
+            password: "", 
+            message: "" 
+        });
+    }
 
     return (
-        <EmptyMainContainer theme={theme}>
+        <EmptyMainContainer activeComponent={activeComponent} theme={theme}>
 
 
             <img className={`${theme === "white" ? "invert" : "invert-1"}`} src="./images/empty.png" alt="empty" width={"200px"}  />
 
-            <div className="textArea">Protect Yourself </div>
+            <div className="textArea">{ activeComponent === "Deleted Items" ? "No Deleted Items":"Protect Yourself" } </div>
             
-            <button className='addButton'>
+            <button onClick={createHandler} className={`addButton`} >
                     <span className='leftSideIcons'><FaPlus fontSize={"18px"} /></span>
                     <span className='sideButtons'>Create New</span>
                 </button>
@@ -51,7 +65,7 @@ const EmptyMainContainer = styled.main`
         width: 150px;
         height: 45px;
         padding: 5px;
-        display: flex;
+        display: ${(props)=> props.activeComponent === "Deleted Items" ? "none":"flex"};
         align-items: center;
         justify-content: center;
         gap: 5px;

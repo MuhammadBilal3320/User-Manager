@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import ManagerContext from './context/Context';
 import { HiDotsVertical } from "react-icons/hi";
@@ -7,7 +7,7 @@ import { MdModeEdit } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
 import HomeEditModal from './HomeEditModal';
 import { useNavigate} from 'react-router-dom';
-
+import HomeEmpty from './HomeEmpty';
 
 const MyVault = () => {
     const { setEditButton, setCreateButton, setSelectedData, mainData, setMainData, activeCard, setActiveCard } = useContext(ManagerContext);
@@ -104,7 +104,8 @@ const MyVault = () => {
     return (
         <VaultMainContainer theme={theme} editDelete={editDelete}>
 
-            <main>
+            { !mainData.length > 0 ? <HomeEmpty/> :
+                <main>
                 {mainData.map((item, index) => (
 
                     <div
@@ -176,6 +177,7 @@ const MyVault = () => {
                     </div>
                 ))}
             </main>
+            }
             <HomeEditModal />
         </VaultMainContainer>
     );

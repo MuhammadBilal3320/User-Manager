@@ -187,6 +187,7 @@ const RegistrationContainer = styled.div`
         width: 100%;
         padding: 5px;
         background-color: white;
+        margin-left: 0;
     }
 
     h4{
