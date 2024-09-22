@@ -32,7 +32,7 @@ const Registration = () => {
     const userRegistration = async (values) => {
         toast.promise(
             axios.post(
-                "http://localhost:7000/auth/createUser",
+            `   ${import.meta.env.VITE_REAL_HOST_URL}/auth/createUser`,
                 {
                     userName: values.userName,
                     email: values.email,

@@ -16,7 +16,7 @@ const DeletedItems = () => {
     const fetchUser = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get('http://localhost:7000/data/fetchDeletedAll', {
+            const response = await axios.get(`${import.meta.env.VITE_REAL_HOST_URL}/data/fetchDeletedAll`, {
                 headers: {
                     authToken: `${token}`
                 }
@@ -36,7 +36,7 @@ const DeletedItems = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.delete(`http://localhost:7000/data/deleteData/${itemId}`, {
+            const response = await axios.delete(`${import.meta.env.VITE_REAL_HOST_URL}/data/deleteData/${itemId}`, {
                 headers: {
                     authToken: `${token}`
                 }
@@ -96,7 +96,8 @@ const DeletedItems = () => {
                                 title: item.title,
                                 emailOrUser: item.emailOrUser,
                                 password: item.password,
-                                message: item.message
+                                message: item.message, 
+                                date: new Date(item.date).toLocaleString()
                             });
                             console.log(selectedData)
                         }}

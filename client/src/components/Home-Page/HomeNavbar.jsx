@@ -21,7 +21,7 @@ const HomeNavbar = () => {
     const fetchUserDetail = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get('http://localhost:7000/data/userDetails', {
+            const response = await axios.get(`${import.meta.env.VITE_REAL_HOST_URL}/data/userDetails`, {
                 headers: {
                     authToken: token
                 }

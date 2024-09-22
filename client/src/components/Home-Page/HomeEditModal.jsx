@@ -11,6 +11,7 @@ const HomeEditModal = () => {
     const { theme, editModal, setEditModal, createButton, editButton, setSelectedData, selectedData, mainData, setMainData } = useContext(ManagerContext);
     const [showPassword, setShowPassword] = useState(false);
     const [visiblePasswordId, setVisiblePasswordId] = useState(null);
+    const currentDate = new Date().toLocaleString();
 
 
     const generateRandomPassword = () => {
@@ -30,12 +31,13 @@ const HomeEditModal = () => {
         const token = localStorage.getItem('token');
         try {
             const response = await axios.post(
-                'http://localhost:7000/data/createData',
+                `${import.meta.env.VITE_REAL_HOST_URL}/data/createData`,
                 {
                     title: values?.title || '',
                     emailOrUser: values?.emailOrUser || '',
                     password: values?.password || '',
-                    message: values?.message || ''
+                    message: values?.message || '',
+                    date: currentDate
                 },
                 {
                     headers: {
@@ -49,8 +51,8 @@ const HomeEditModal = () => {
                 "title": values.title,
                 "emailOrUser": values.emailOrUser,
                 "password": values.password,
-                "message": values.message
-
+                "message": values.message,
+                date: currentDate
             }
 
             setSelectedData({ id: "", title: "", emailOrUser: "", password: "", message: "" });
@@ -68,7 +70,7 @@ const HomeEditModal = () => {
         const token = localStorage.getItem('token');
         try {
             const response = await axios.put(
-                `http://localhost:7000/data/updateData/${values.id}`,
+                `${import.meta.env.VITE_REAL_HOST_URL}/data/updateData/${values.id}`,
                 {
                     title: values?.title || '',
                     emailOrUser: values?.emailOrUser || '',
@@ -125,7 +127,7 @@ const HomeEditModal = () => {
                         title: selectedData?.title || '',
                         emailOrUser: selectedData?.emailOrUser || '',
                         password: selectedData?.password || '',
-                        message: selectedData?.message || ''
+                        message: selectedData?.message || '',
                     }}
                     enableReinitialize // Reinitialize form values when selectedData changes
                     onSubmit={(values, { resetForm }) => {  // Add resetForm here
@@ -218,6 +220,11 @@ const HomeEditModal = () => {
                             <div className="create-Edit-Button my-5 flex justify-center items-center flex-col">
                                 {createButton && (<button type='submit' className='create-Button bg-[#00dfc0]'>Create</button>)}
                                 {editButton && (<button type='submit' className='create-Button bg-[#00dfc0]'>Save</button>)}
+                                {!createButton && !editButton && (
+                                    <div className="text-sm font-bold flex gap-4">Created on:
+                                        <b className='text-sm font-semibold text-gray-500'>{selectedData.date}</b>
+                                    </div>
+                                )}
                             </div>
 
                         </Form>

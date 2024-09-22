@@ -4,7 +4,6 @@ import styled from 'styled-components'
 import HomeSidebar from './HomeSidebar'
 import UseState from './context/UseState'
 import HomeBody from './HomeBody'
-import HomeEditModal from './HomeEditModal'
 
 const HomePage = () => {
     return (

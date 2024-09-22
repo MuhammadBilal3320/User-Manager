@@ -11,7 +11,7 @@ const UseState = (props) => {
     const [editModal, setEditModal] = useState(false);
     const [createButton, setCreateButton] = useState(false);
     const [editButton, setEditButton] = useState(false);
-    const [selectedData, setSelectedData] = useState({id:"", title:"", emailOrUser:"", password:"", message:""})
+    const [selectedData, setSelectedData] = useState({id:"", title:"", emailOrUser:"", password:"", message:"", date:""})
     const [filteredResults, setFilteredResults] = useState(mainData);
     const [activeCard, setActiveCard] = useState(null);
     const [itemHighlighter, setItemHighlighter] = useState(null);

@@ -23,7 +23,7 @@ const Login = () => {
         try {
             const response = await toast.promise(
                 axios.post(
-                    "http://localhost:7000/auth/loginUser",
+                    `${import.meta.env.VITE_REAL_HOST_URL}/auth/loginUser`,
                     {
                         email: values.email,
                         password: values.password,

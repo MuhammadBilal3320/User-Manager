@@ -6,8 +6,9 @@ import axios from 'axios';
 import { MdModeEdit } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
 import HomeEditModal from './HomeEditModal';
-import { useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import HomeEmpty from './HomeEmpty';
+import { date } from 'yup';
 
 const MyVault = () => {
     const { setEditButton, setCreateButton, setSelectedData, mainData, setMainData, activeCard, setActiveCard } = useContext(ManagerContext);
@@ -21,13 +22,14 @@ const MyVault = () => {
     const fetchUser = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get('http://localhost:7000/data/fetchAllData', {
+            const response = await axios.get(`${import.meta.env.VITE_REAL_HOST_URL}/data/fetchAllData`, {
                 headers: {
                     authToken: `${token}`
                 }
             });
-            setMainData(response.data); // Store the fetched data in state
-            console.log(response.data)
+            const sortedData = response.data.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            setMainData(sortedData);
 
         } catch (error) {
             console.error('Error fetching user details:', error);
@@ -35,10 +37,10 @@ const MyVault = () => {
     };
 
     useEffect(() => {
-        if(localStorage.getItem("token")){
+        if (localStorage.getItem("token")) {
             fetchUser();
         }
-        else{
+        else {
             navigate("/")
         }
     }, []);
@@ -90,93 +92,98 @@ const MyVault = () => {
                 }
             });
 
-            const newData = mainData.filter(item => item._id !== id);
-            setMainData(newData);
+            if (response.status === 200) { // Ensure the deletion was successful
+                const newData = mainData.filter(item => item._id !== id);
+                console.log("Updated Data after deletion:", newData); // Debugging step
+                setMainData(newData); // Update state to reflect UI change
+            }
 
-            setEditDelete(null)
-
+            setEditDelete(null); // Close the edit/delete dropdown
         } catch (error) {
             console.error('Error deleting data:', error);
         }
-        setActiveCard(null);
-    }
+
+        setActiveCard(null); // Reset the active card state
+    };
+
 
     return (
         <VaultMainContainer theme={theme} editDelete={editDelete}>
 
-            { !mainData.length > 0 ? <HomeEmpty/> :
+            {!mainData.length > 0 ? <HomeEmpty /> :
                 <main>
-                {mainData.map((item, index) => (
+                    {mainData.map((item, index) => (
 
-                    <div
-                        key={index}
-                        onClick={(e) => {
-                            setCreateButton(false);
-                            setEditButton(false);
-                            // Prevent modal from opening if the click happens inside the edit-delete dropdown
-                            if (!e.target.closest('.edit-Delete')) {
-                                setActiveCard(index);
-                                console.log("This is active card: ", activeCard)
-                                setEditModal(true);
-                                setActiveDots(null);
-                            }
-                            if (itemHighlighter === item._id) {
-                                setItemHighlighter(null);
-                            }
-                            setSelectedData({
-                                title: item.title,
-                                emailOrUser: item.emailOrUser,
-                                password: item.password,
-                                message: item.message
-                            });
+                        <div
+                            key={index}
+                            onClick={(e) => {
+                                setCreateButton(false);
+                                setEditButton(false);
+                                // Prevent modal from opening if the click happens inside the edit-delete dropdown
+                                if (!e.target.closest('.edit-Delete')) {
+                                    setActiveCard(index);
+                                    console.log("This is active card: ", activeCard)
+                                    setEditModal(true);
+                                    setActiveDots(null);
+                                }
+                                if (itemHighlighter === item._id) {
+                                    setItemHighlighter(null);
+                                }
+                                setSelectedData({
+                                    title: item.title,
+                                    emailOrUser: item.emailOrUser,
+                                    password: item.password,
+                                    message: item.message,
+                                    date: new Date(item.date).toLocaleString()
+                                });
 
-                        }}
-                        isclicked={activeDots !== null}
-                        className={`card ${(activeCard === index || activeDots === index) ? "active" : ""} ${itemHighlighter === item._id ? "highlight" : ""}`}
-                    >
-                        <div className="card-icon-text flex justify-center items-center">
-                            <div className="socialIcon"><span>{item.title ? item.title[0].toUpperCase() : ''}</span></div>
-                            <div className="cardText">
-                                <div className="cardTitle">{item.title}</div>
-                                <div className="cardEmail">{item.emailOrUser}</div>
+                            }}
+                            isclicked={activeDots !== null}
+                            className={`card ${(activeCard === index || activeDots === index) ? "active" : ""} ${itemHighlighter === item._id ? "highlight" : ""}`}
+                        >
+                            <div className="card-icon-text flex justify-center items-center">
+                                <div className="socialIcon"><span>{item.title ? item.title[0].toUpperCase() : ''}</span></div>
+                                <div className="cardText">
+                                    <div className="cardTitle">{item.title}</div>
+                                    <div className="cardEmail">{item.emailOrUser}</div>
+                                </div>
+                            </div>
+
+                            <div className={`dotsContainer py-[5px] rounded-badge ${theme === "white" ? "bg-[#1d2a35]" : "bg-[white]"}`}>
+                                <div className={` cardLastDot px-1 py-1 rounded-box ${theme === "white" ? "bg-[aliceblue]" : "bg-black"} `} />
+                                <HiDotsVertical onClick={(e) => toggleEditDelete(index, e)} className={`threeDots `} color={`${theme === "white" ? "white" : "black"}`} fontSize={"25px"} />
+
+                                {editDelete === index && (
+                                    <div className="edit-Delete">
+                                        <div onClick={(event) => {
+                                            event.stopPropagation();
+                                            setEditModal(true);
+                                            setCreateButton(false);
+                                            setEditButton(true);
+                                            setSelectedData({
+                                                id: item._id,
+                                                title: item.title,
+                                                emailOrUser: item.emailOrUser,
+                                                password: item.password,
+                                                message: item.message
+                                            });
+                                            setEditDelete(null);
+
+                                        }}>
+                                            <span className='w-[25%]'><MdModeEdit className='edit-delete-icon' /></span>
+                                            <button className='w-[60%] text-left font-semibold'>Edit</button>
+                                        </div>
+                                        <div onClick={() => deleteHandler(item._id)}>
+                                            <span className='w-[25%]'><MdDelete color='red' className='edit-delete-icon' /></span>
+                                            <button className='w-[60%] text-red-600 text-left font-semibold'>Delete</button>
+                                        </div>
+                                    </div>
+                                )}
+
                             </div>
                         </div>
-
-                        <div className={`dotsContainer py-[5px] rounded-badge ${theme === "white" ? "bg-[#1d2a35]" : "bg-[white]"}`}>
-                            <div className={` cardLastDot px-1 py-1 rounded-box ${theme === "white" ? "bg-[aliceblue]" : "bg-black"} `} />
-                            <HiDotsVertical onClick={(e) => toggleEditDelete(index, e)} className={`threeDots `} color={`${theme === "white" ? "white" : "black"}`} fontSize={"25px"} />
-
-                            {editDelete === index && (
-                                <div className="edit-Delete">
-                                    <div onClick={(event) => {
-                                        event.stopPropagation();
-                                        setEditModal(true);
-                                        setCreateButton(false);
-                                        setEditButton(true);
-                                        setSelectedData({
-                                            id: item._id,
-                                            title: item.title,
-                                            emailOrUser: item.emailOrUser,
-                                            password: item.password,
-                                            message: item.message
-                                        });
-                                        setEditDelete(null);
-
-                                    }}>
-                                        <span className='w-[25%]'><MdModeEdit className='edit-delete-icon' /></span>
-                                        <button className='w-[60%] text-left font-semibold'>Edit</button>
-                                    </div>
-                                    <div onClick={() => deleteHandler(item._id)}>
-                                        <span className='w-[25%]'><MdDelete color='red' className='edit-delete-icon' /></span>
-                                        <button className='w-[60%] text-red-600 text-left font-semibold'>Delete</button>
-                                    </div>
-                                </div>
-                            )}
-
-                        </div>
-                    </div>
-                ))}
-            </main>
+                    ))}
+                </main>
             }
             <HomeEditModal />
         </VaultMainContainer>
