@@ -1,8 +1,8 @@
 import { Field, Form, Formik } from 'formik';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { IoIosEye, IoIosEyeOff } from "react-icons/io";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import * as Yup from 'yup'; // Import Yup for validation
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
@@ -11,6 +11,7 @@ import 'react-toastify/dist/ReactToastify.css';
 const Login = () => {
 
     const [showPassword, setShowPassword] = useState(false);
+    const navigate = useNavigate();
 
     // Define validation schema
     const validationSchema = Yup.object({
@@ -18,44 +19,65 @@ const Login = () => {
         password: Yup.string().min(8, 'Password must be at least 8 characters').required('Password is required')
     });
 
-
     const userLogin = async (values) => {
-        toast.promise(
-            axios.post(
-                "http://localhost:7000/auth/loginUser",
+        try {
+            const response = await toast.promise(
+                axios.post(
+                    "http://localhost:7000/auth/loginUser",
+                    {
+                        email: values.email,
+                        password: values.password,
+                    },
+                    {
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    }
+                ),
                 {
-                    email: values.email,
-                    password: values.password,
+                    pending: 'Logging in...',
+                    success: 'Login successful!',
+                    error: {
+                        render({ data }) {
+                            return data.response?.data?.message || 'Login failed!';
+                        },
+                    },
                 },
                 {
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
                 }
-            ),
-            {
-                pending: 'Logging in...',
-                success: 'Login successful!',
-                error: {
-                    render({ data }) {
-                        // Custom error message from the server
-                        return data.response?.data?.message || 'Login failed!';
-                    },
-                },
-            },
-            {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-            }
-        );
-    };
+            );
+    
+            // Log the entire response to inspect its structure
+            console.log('Response from server:', response);
+    
+            const { data } = response;
 
+
+            console.log(data)
+    
+            if (data.success) {
+                localStorage.setItem('token', data.authToken);
+                setTimeout(() => {
+                    toast.success("Login successful!");
+                    navigate("/home");
+                }, 700);
+            } else {
+                console.error("Token not found in the response.");
+            }
+        } catch (error) {
+            console.error("Login failed:", error.response?.data?.message || error.message);
+        }
+        
+    };
+    
     return (
         <RegistrationMain>
             <div className="welcomeBack">
@@ -72,7 +94,7 @@ const Login = () => {
                     initialValues={{ email: '', password: '' }}
                     validationSchema={validationSchema}  // Attach the validation schema
                     onSubmit={(values) => {
-                        userLogin(values)
+                        userLogin(values);
                     }}
                 >
                     {({ values, errors, touched }) => (
@@ -124,7 +146,7 @@ const Login = () => {
                     <h3>PROTECT YOURSELF</h3>
                 </div>
             </SideContainer>
-            <ToastContainer style={{ width: "360px" }} position="top-right"/>
+            <ToastContainer style={{ width: "360px" }} position="top-right" />
         </RegistrationMain>
     );
 };

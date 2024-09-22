@@ -16,6 +16,8 @@ router.post('/loginUser',
     ],
     async (req, res) => {
 
+        let success = false;
+
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
@@ -42,11 +44,13 @@ router.post('/loginUser',
 
             const authData = {
                 id: ExistOrNot._id,
+                userName: ExistOrNot.userName,
+                email: ExistOrNot.email
             }
 
             const authToken = jsonwebtoken.sign(authData, process.env.REAL_SECRET_JWT);
-
-            res.status(201).json({ message: 'Login User Successfully!', authData: authToken });
+            success = true;
+            res.status(201).json({ success, authToken: authToken });
 
         } catch (error) {
             return res.status(500).send({ message: "Internal Server Error!" });

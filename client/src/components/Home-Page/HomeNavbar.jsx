@@ -6,23 +6,27 @@ import { RiShutDownLine } from "react-icons/ri";
 import { GiHamburgerMenu } from "react-icons/gi";
 import ManagerContext from './context/Context';
 import axios from 'axios';
+import {  useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+
 
 const HomeNavbar = () => {
     const {theme, setTheme, setLeftSlider} = useContext(ManagerContext);
     const [dropDown, setDropDown] = useState(false);
     const [fetchUserDetails, setFetchUserDetails] = useState({ userName: "Unknown", email: "unknown@gmail.com" })
     const dropDownRef = useRef(null);
+    const navigate = useNavigate();
 
 
-    const fetchUser = async () => {
+    const fetchUserDetail = async () => {
         try {
-            const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZTJhZmNiMjExZTg5Mzk4OThiN2EyNSIsInVzZXJOYW1lIjoiRXNhIEtoYW4iLCJlbWFpbCI6ImVzYUFobWFkQGdtYWlsLmNvbSIsImlhdCI6MTcyNjEzMjE3MX0.5HpP9nAYyv2bteOkapqgvAHz_nP1usQt0VwwV7tGkw8"; // Retrieve token from localStorage or any secure storage
+            const token = localStorage.getItem('token');
             const response = await axios.get('http://localhost:7000/data/userDetails', {
                 headers: {
-                    authToken: `${token}`
+                    authToken: token
                 }
             });
-            
+
             setFetchUserDetails({userName:response.data.userName, email:response.data.email})
 
         } catch (error) {
@@ -31,10 +35,37 @@ const HomeNavbar = () => {
     };
 
     useEffect(() => {
-        fetchUser()
+
+        if(localStorage.getItem('token')){
+            
+            fetchUserDetail()
+            navigate("/home")
+        }
+        else{
+            navigate("/")
+        }
+
     }, [])
 
-
+    const handleLogout = () => {
+        toast.promise(
+            new Promise((resolve) => {
+                setTimeout(() => {
+                    localStorage.removeItem("token");
+                    resolve(); // Resolve the promise after 1 second
+                }, 400);
+            }),
+            {
+                pending: "Logging out...",
+                success: "You have logged out successfully 👋",
+                error: "Logout failed",
+            }
+        );
+    
+        setTimeout(() => {
+            navigate("/"); // Navigate after 1 second
+        }, 800);
+    };
 
     useEffect(() => {
         localStorage.setItem('theme', theme);
@@ -60,7 +91,7 @@ const HomeNavbar = () => {
 
     return (
         <MainNavbar theme={theme} dropDown={dropDown}>
-
+            <ToastContainer theme='dark' style={{width:"400px"}} position='bottom-right'/>
             <div className="hamBurger"><GiHamburgerMenu onClick={()=> setLeftSlider(true)} className='md:hidden' fontSize={"25px"} color={theme === "white" ? "white" : "#1d2a35"} /></div>
 
             <div className="logo">
@@ -82,7 +113,7 @@ const HomeNavbar = () => {
 
                     <ul className='dropDown'>
                         <li>{fetchUserDetails.email}</li>
-                        <li id='logout'><RiShutDownLine fontSize={"18px"} />LOG OUT</li>
+                        <li onClick={handleLogout} id='logout'><RiShutDownLine fontSize={"18px"} />LOG OUT</li>
                     </ul>
                 </div>
             </div>

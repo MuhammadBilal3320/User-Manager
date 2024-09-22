@@ -27,7 +27,7 @@ const HomeEditModal = () => {
 
     // ********************* Creating New Data Card Start ****************************
     const AddHandler = async (values) => {
-        const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZGJiZDI0ZGI2ZmVmYzRhZjU2N2ZlMyIsImlhdCI6MTcyNTY3Njg1N30.kirwK8JEQ6TLKrakOk-vCDUFZuvx7x-w4JKBytV6ED0'; // Replace with your actual token
+        const token = localStorage.getItem('token');
         try {
             const response = await axios.post(
                 'http://localhost:7000/data/createData',
@@ -65,7 +65,7 @@ const HomeEditModal = () => {
 
     // ********************* Editing Existing Data Card Start ****************************
     const EditHandler = async (values) => {
-        const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZGJiZDI0ZGI2ZmVmYzRhZjU2N2ZlMyIsImlhdCI6MTcyNTY3Njg1N30.kirwK8JEQ6TLKrakOk-vCDUFZuvx7x-w4JKBytV6ED0'; // Replace with your actual token
+        const token = localStorage.getItem('token');
         try {
             const response = await axios.put(
                 `http://localhost:7000/data/updateData/${values.id}`,

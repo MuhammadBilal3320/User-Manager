@@ -6,6 +6,8 @@ import axios from 'axios';
 import { MdModeEdit } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
 import HomeEditModal from './HomeEditModal';
+import { useNavigate} from 'react-router-dom';
+
 
 const MyVault = () => {
     const { setEditButton, setCreateButton, setSelectedData, mainData, setMainData, activeCard, setActiveCard } = useContext(ManagerContext);
@@ -13,17 +15,19 @@ const MyVault = () => {
 
     const [editDelete, setEditDelete] = useState(null);
     const [activeDots, setActiveDots] = useState(null);
+    const navigate = useNavigate();
 
 
     const fetchUser = async () => {
         try {
-            const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZGJiZDI0ZGI2ZmVmYzRhZjU2N2ZlMyIsImlhdCI6MTcyNTY3Njg1N30.kirwK8JEQ6TLKrakOk-vCDUFZuvx7x-w4JKBytV6ED0"; // Replace with secure token retrieval
+            const token = localStorage.getItem('token');
             const response = await axios.get('http://localhost:7000/data/fetchAllData', {
                 headers: {
                     authToken: `${token}`
                 }
             });
             setMainData(response.data); // Store the fetched data in state
+            console.log(response.data)
 
         } catch (error) {
             console.error('Error fetching user details:', error);
@@ -31,7 +35,12 @@ const MyVault = () => {
     };
 
     useEffect(() => {
-        fetchUser();
+        if(localStorage.getItem("token")){
+            fetchUser();
+        }
+        else{
+            navigate("/")
+        }
     }, []);
 
 
@@ -74,7 +83,7 @@ const MyVault = () => {
 
     const deleteHandler = async (id) => {
         try {
-            const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZGJiZDI0ZGI2ZmVmYzRhZjU2N2ZlMyIsImlhdCI6MTcyNTY3Njg1N30.kirwK8JEQ6TLKrakOk-vCDUFZuvx7x-w4JKBytV6ED0";
+            const token = localStorage.getItem('token');
             const response = await axios.post(`http://localhost:7000/data/deleteItem/${id}`, {}, {
                 headers: {
                     authToken: `${token}`

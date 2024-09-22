@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import * as Yup from 'yup';  // Import Yup for validation
 import { IoIosEye, IoIosEyeOff } from "react-icons/io";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -27,6 +27,7 @@ const RegistrationSchema = Yup.object().shape({
 
 const Registration = () => {
     const [showPassword, setShowPassword] = useState(false);
+    const navigate = useNavigate();
 
     const userRegistration = async (values) => {
         toast.promise(
@@ -64,6 +65,9 @@ const Registration = () => {
                 theme: "dark",
             }
         );
+        setTimeout(() => {
+            navigate("/registrationSuccessful")
+        }, 1000);
     };
 
 
@@ -176,6 +180,7 @@ const RegistrationContainer = styled.div`
     background-color: whitesmoke;
     box-shadow: rgb(0, 223, 192) 0 0 6px 2px;
     padding: 10px;
+    margin-left: 150px;
 
     @media screen and (max-width: 768px) {
         box-shadow: none;

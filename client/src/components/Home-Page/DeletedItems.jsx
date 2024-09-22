@@ -14,7 +14,7 @@ const DeletedItems = () => {
 
     const fetchUser = async () => {
         try {
-            const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZGJiZDI0ZGI2ZmVmYzRhZjU2N2ZlMyIsImlhdCI6MTcyNTY3Njg1N30.kirwK8JEQ6TLKrakOk-vCDUFZuvx7x-w4JKBytV6ED0"; 
+            const token = localStorage.getItem('token');
             const response = await axios.get('http://localhost:7000/data/fetchDeletedAll', {
                 headers: {
                     authToken: `${token}`
@@ -34,7 +34,7 @@ const DeletedItems = () => {
         setEditModal(false);
 
         try {
-            const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZGJiZDI0ZGI2ZmVmYzRhZjU2N2ZlMyIsImlhdCI6MTcyNTY3Njg1N30.kirwK8JEQ6TLKrakOk-vCDUFZuvx7x-w4JKBytV6ED0"; 
+            const token = localStorage.getItem('token');
             const response = await axios.delete(`http://localhost:7000/data/deleteData/${itemId}`, {
                 headers: {
                     authToken: `${token}`
